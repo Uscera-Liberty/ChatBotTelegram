@@ -10,8 +10,6 @@ state = 0
 def get_state():
     return state
 
-config_url = 'https://api.privatbank.ua/p24api/pubinfo?json&exchange&coursid=5'
-response = requests.get(config_url).json()
 token = '2112568715:AAGyNE0nLpiJfPuRrhm3g_0P6fhns-Rlfy0'
 bot = telebot.TeleBot(token)
 
@@ -35,8 +33,8 @@ def starting(message):
     itembtn4 = types.KeyboardButton('Хочу зарегистрироваться)')
     markup.add(itembtn1, itembtn2, itembtn3, itembtn4)
     msg = bot.send_message(message.chat.id,'Здраствуй, я самый полезный бот в мире)Я могу для тебя найти погоду,последние новости и я даже знаю где ты сейчас (хаха).Давай начнем?'
-                                           '/registration - зарегистрироваться в системе \n /weather - узнать погоду в своем городе \n /converter - узнать курс валют \n /news - узнать последние мировые новости \n /location - узнать свои координаты \n'
-                                           '/afisha - афиша театра, топ-10 в кино ,топ-10 в музыке')
+                                           '/registration - зарегистрироваться в системе \n /weather - узнать погоду в своем городе \n /location - узнать свои координаты \n'
+                                           '/afisha - новости, топ-10 в кино ,топ-10 в музыке')
 
 @bot.message_handler(commands = ['registration'])
 def subcribe(message):
@@ -117,14 +115,14 @@ def get_weather(message):
         pr = w.pressure['press']
         vd = w.visibility_distance
         bot.send_message(message.chat.id, "В городе " + str(place) + " температура " + str(t1) + " °C" + "\n" +
-				"Максимальная температура " + str(t3) + " °C" +"\n" +
-				"Минимальная температура " + str(t4) + " °C" + "\n" +
-				"Ощущается как" + str(t2) + " °C" + "\n" +
-				"Скорость ветра " + str(wi) + " м/с" + "\n" +
-				"Давление " + str(pr) + " мм.рт.ст" + "\n" +
-				"Влажность " + str(humi) + " %" + "\n" +
-				"Видимость " + str(vd) + "  метров" + "\n" +
-				"Описание " + str(st) + str(dt))
+				"Максимальная температура: " + str(t3) + " °C" +"\n" +
+				"Минимальная температура: " + str(t4) + " °C" + "\n" +
+				"Ощущается как:" + str(t2) + " °C" + "\n" +
+				"Скорость ветра: " + str(wi) + " м/с" + "\n" +
+				"Давление: " + str(pr) + " мм.рт.ст" + "\n" +
+				"Влажность: " + str(humi) + " %" + "\n" +
+				"Видимость: " + str(vd) + "  метров" + "\n" +
+				"Описание: " + str(dt))
     except:
         bot.send_message(message.chat.id,"Такой город не найден!")
         print(str(message.text),"- не найден")
@@ -145,33 +143,6 @@ def location (message):
         bot.send_message(message.chat.id, "Что-то пошло не так,попробуй снова", message.location)
 
 
-@bot.message_handler(commands=['converter'])
-def send_description(message):
-    markup = types.ReplyKeyboardMarkup(resize_keyboard= True , row_width=2)
-
-    itembtn1 = types.KeyboardButton('USD')
-    itembtn2 = types.KeyboardButton('EUR')
-    itembtn3 = types.KeyboardButton('RUR')
-    itembtn4 = types.KeyboardButton('BTS')
-    markup.add(itembtn1, itembtn2, itembtn3, itembtn4)
-    msg = bot.send_message(message.chat.id, 'Узнать курс от ЦБ' , reply_markup=markup)
-    bot.register_next_step_handler(msg, process_coin_step)
-
-def process_coin_step(message):
-    try:
-        markup = types.ReplyKeyboardRemove(selective=False)
-
-        for coin in response:
-            if (message.text == coin['ccy']):
-                bot.send_message(message.chat.id , printCoin(coin['buy'], coin['sale']),  reply_markup= markup , parse_mode= "Markdown" )
-    except Exception as e :
-        bot.reply_to(message , 'oooops!')
-
-def printCoin(buy, sale):
-    '''Вывод курса'''
-    return 'Курс покупки ' + str(buy) + '\n "Курс продажи"' + str(sale)
-
-
 @bot.message_handler(commands=['afisha'])
 def initialisation(message):
     bot.send_message(message.chat.id, 'Введите,какой темой вы интересуетесь:новости,кино,музыка')
@@ -181,7 +152,6 @@ def initialisation(message):
 # елси пользователь что-то ввел то выполняется эта функция
 @bot.message_handler(func=lambda message: message.text == 'кино')
 def cinema(message):
-    bot.send_message(message.chat.id, "Топ-10 лучших фильмов по версии КиноАфиша")
     URL = 'https://www.kinoafisha.info/rating/movies/'
     HEADERS = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36'
@@ -214,7 +184,6 @@ def music(message):  #search for url and thing to parse
 
 @bot.message_handler(func=lambda message: message.text == 'музыка')
 def music(message):
-    bot.send_message(message.chat.id,"Топ-10 популярных песен по версии Яндекс-Музыка")
     URL = 'https://music.yandex.ru/users/olegnovikov92/playlists/1001/'
     HEADERS = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.193 Safari/537.36'
